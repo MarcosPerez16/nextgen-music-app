@@ -1,7 +1,5 @@
-@import 'tailwindcss/preflight';
-@import 'tailwindcss/utilities';
+@import "tailwindcss";
 
-/* Optional: set up body styling */
 body {
   background-color: white;
   color: black;
