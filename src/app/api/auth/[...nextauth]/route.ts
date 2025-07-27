@@ -1,6 +1,21 @@
-import NextAuth, { type NextAuthOptions } from "next-auth";
+import NextAuth, {
+  type NextAuthOptions,
+  type Account,
+  type User,
+} from "next-auth";
+import type { JWT } from "next-auth/jwt";
+import type { AdapterUser } from "next-auth/adapters";
 import { PrismaClient } from "@prisma/client";
 import SpotifyProvider from "next-auth/providers/spotify";
+import { refreshSpotifyToken } from "@/lib/spotify";
+
+interface CustomJWT {
+  accessToken?: string;
+  refreshToken?: string;
+  expiresAt?: number;
+  spotifyId?: string;
+  error?: string;
+}
 
 // create new prisma client instance to communciate with our database
 const prisma = new PrismaClient();
@@ -18,7 +33,12 @@ const authOptions: NextAuthOptions = {
   callbacks: {
     async signIn({ user, account }) {
       // make sure we have the account data and required tokens if not we reject login
-      if (!account || !account.access_token || !account.refresh_token)
+      if (
+        !account ||
+        !account.access_token ||
+        !account.refresh_token ||
+        !account.expires_at
+      )
         return false; //cant proceed without tokens
 
       //   save or update user in our database
@@ -32,16 +52,74 @@ const authOptions: NextAuthOptions = {
           //if user exists update these fields, tokens expire so we refresh them on each login
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
+          //have to convert unix time that spotify gives us to JS date
+          expiresAt: new Date(account.expires_at * 1000),
         },
         create: {
           spotifyId: user.id,
           email: user.email,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
+          expiresAt: new Date(account.expires_at * 1000),
         },
       });
 
       return true;
+    },
+
+    async jwt({
+      token,
+      account,
+      user,
+    }: {
+      token: JWT & CustomJWT;
+      account: Account | null;
+      user: User | AdapterUser;
+    }) {
+      // first login - store fresh tokens from spotify
+      if (account && user && account.expires_at) {
+        //user just logged in - save their tokens to the JWT
+        return {
+          ...token,
+          accessToken: account.access_token,
+          refreshToken: account.refresh_token,
+          expiresAt: account.expires_at * 1000,
+          spotifyId: user.id,
+        };
+      }
+
+      //return visit - check if tokens need refreshing
+      //make sure we have the required token data
+      if (!token.expiresAt || !token.refreshToken) {
+        return {
+          ...token,
+          error: "MissingTokenData",
+        };
+      }
+
+      //check if the current access token is expired
+      if (Date.now() < token.expiresAt) {
+        return token;
+      }
+
+      //token is expired
+      try {
+        const refreshedTokens = await refreshSpotifyToken(token.refreshToken);
+
+        return {
+          ...token,
+          accessToken: refreshedTokens.access_token,
+          refreshToken: refreshedTokens.refresh_token,
+          expiresAt: Date.now() + refreshedTokens.expires_in * 1000,
+        };
+      } catch (error) {
+        console.error("Error refreshing token:", error);
+
+        return {
+          ...token,
+          error: "RefreshTokenError",
+        };
+      }
     },
   },
 };

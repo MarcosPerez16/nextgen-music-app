@@ -19,5 +19,6 @@ model User {
   email        String?
   accessToken  String
   refreshToken String
+  expiresAt    DateTime
   createdAt    DateTime @default(now())
 }
