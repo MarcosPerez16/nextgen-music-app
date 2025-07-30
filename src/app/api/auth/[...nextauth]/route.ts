@@ -21,7 +21,7 @@ interface CustomJWT {
 const prisma = new PrismaClient();
 
 //configuration object that tells NextAuth how to handle authentication
-const authOptions: NextAuthOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     SpotifyProvider({
       // these identify our app to spotify's servers
@@ -79,13 +79,15 @@ const authOptions: NextAuthOptions = {
       // first login - store fresh tokens from spotify
       if (account && user && account.expires_at) {
         //user just logged in - save their tokens to the JWT
-        return {
+        const newToken = {
           ...token,
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
           expiresAt: account.expires_at * 1000,
           spotifyId: user.id,
         };
+
+        return newToken;
       }
 
       //return visit - check if tokens need refreshing
@@ -120,6 +122,15 @@ const authOptions: NextAuthOptions = {
           error: "RefreshTokenError",
         };
       }
+    },
+    async session({ session, token }) {
+      // Include custom data from JWT token in the session
+      return {
+        ...session,
+        spotifyId: token.spotifyId,
+        accessToken: token.accessToken,
+        refreshToken: token.refreshToken,
+      };
     },
   },
 };
