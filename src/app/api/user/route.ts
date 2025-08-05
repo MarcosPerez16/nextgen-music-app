@@ -85,8 +85,7 @@ export async function PUT(request: Request) {
         createdAt: updateUser.createdAt,
       },
     });
-  } catch (error) {
-    console.log(error);
+  } catch {
     return Response.json({ error: "Failed to update user" }, { status: 500 });
   }
 }
