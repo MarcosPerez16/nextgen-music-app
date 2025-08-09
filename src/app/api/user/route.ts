@@ -1,12 +1,7 @@
 import { getServerSession, Session } from "next-auth";
 import { PrismaClient } from "@prisma/client";
 import { authOptions } from "../auth/[...nextauth]/route";
-
-interface ExtendedSession {
-  spotifyId?: string;
-  accessToken?: string;
-  refreshToken?: string;
-}
+import { ExtendedSession } from "@/types/auth";
 
 const prisma = new PrismaClient();
 

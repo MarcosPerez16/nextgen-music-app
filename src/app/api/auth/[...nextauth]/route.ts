@@ -8,14 +8,7 @@ import type { AdapterUser } from "next-auth/adapters";
 import { PrismaClient } from "@prisma/client";
 import SpotifyProvider from "next-auth/providers/spotify";
 import { refreshSpotifyToken } from "@/lib/spotify";
-
-interface CustomJWT {
-  accessToken?: string;
-  refreshToken?: string;
-  expiresAt?: number;
-  spotifyId?: string;
-  error?: string;
-}
+import { CustomJWT } from "@/types/auth";
 
 // create new prisma client instance to communciate with our database
 const prisma = new PrismaClient();
