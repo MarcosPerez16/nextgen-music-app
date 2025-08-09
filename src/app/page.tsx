@@ -1,46 +1,45 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Music } from "lucide-react";
+import { signIn } from "next-auth/react";
 
 export default function Home() {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
+  const router = useRouter();
 
-  //loading state
-  if (status === "loading") {
-    return <main className="text-white text-xl p-4">Loading...</main>;
-  }
+  // Send logged-in users to dashboard
+  useEffect(() => {
+    if (session) {
+      router.push("/dashboard");
+    }
+  }, [session, router]);
 
+  // Show login card for non-logged-in users
   return (
-    <main>
-      <h1>NextGen Music Player</h1>
-
-      {/* show different content based on login status */}
-
-      {session ? (
-        //user is logged in
-        <div>
-          <p>Welcome, {session.user?.name}!</p>
-
-          <button
-            onClick={() => signOut()}
-            className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-          >
-            Logout
-          </button>
-        </div>
-      ) : (
-        // user is not logged in
-        <div>
-          <p>Please log in to access your music</p>
-
-          <button
-            onClick={() => signIn()}
-            className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          >
-            Login
-          </button>
-        </div>
-      )}
-    </main>
+    <div className="flex items-center justify-center min-h-screen">
+      <Card className="w-[400px]">
+        <CardHeader>
+          <CardTitle>Welcome to NextGen Music</CardTitle>
+          <CardDescription>Login with your Spotify account</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button onClick={() => signIn()}>
+            <Music className="mr-2 h-4 w-4" />
+            Login with Spotify
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
