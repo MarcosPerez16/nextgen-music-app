@@ -7,11 +7,13 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SpotifyUserProfile } from "@/types/spotify";
 import { ExtendedSession } from "@/types/auth";
+import { Loader2 } from "lucide-react";
 
 const DashBoard = () => {
   const [userProfile, setUserProfile] = useState<SpotifyUserProfile | null>(
     null
   );
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -29,11 +31,13 @@ const DashBoard = () => {
       const spotifyId = extendedSession.spotifyId;
 
       if (spotifyId) {
+        setIsLoadingProfile(true);
         try {
           const userData = await fetch("/api/spotify-profile");
           const result = await userData.json();
 
           setUserProfile(result.userProfile);
+          setIsLoadingProfile(false);
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
@@ -44,12 +48,16 @@ const DashBoard = () => {
 
   //dont render anything until we have a session
   if (!session) {
-    return <div>Loading...</div>;
+    return (
+      <div>
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
   }
 
   return (
     <div>
-      <Main userProfile={userProfile} />
+      <Main userProfile={userProfile} isLoading={isLoadingProfile} />
 
       <Footer />
     </div>
