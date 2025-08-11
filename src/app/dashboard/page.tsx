@@ -36,7 +36,7 @@ const DashBoard = () => {
           const userData = await fetch("/api/spotify-profile");
           const result = await userData.json();
 
-          setUserProfile(result.userProfile);
+          setUserProfile(result.userProfile.profile);
           setIsLoadingProfile(false);
         } catch (error) {
           console.error("Error fetching user data:", error);
