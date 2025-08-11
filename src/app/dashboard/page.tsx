@@ -33,9 +33,9 @@ const DashBoard = () => {
       if (spotifyId) {
         setIsLoadingProfile(true);
         try {
+          //profile data call
           const userData = await fetch("/api/spotify-profile");
           const result = await userData.json();
-
           setUserProfile(result.userProfile.profile);
           setIsLoadingProfile(false);
         } catch (error) {
