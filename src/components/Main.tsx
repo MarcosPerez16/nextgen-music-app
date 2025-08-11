@@ -1,5 +1,8 @@
 import { SpotifyUserProfile } from "@/types/spotify";
 import { Skeleton } from "./ui/skeleton";
+import Playlists from "./Playlists";
+import TopTracks from "./TopTracks";
+import UserProfile from "./UserProfile";
 
 interface MainProps {
   userProfile: SpotifyUserProfile | null;
@@ -19,10 +22,9 @@ const Main = ({ userProfile, isLoading }: MainProps) => {
 
   return (
     <main className="p-4">
-      <h1>Welcome, {userProfile.display_name}</h1>
-      <p>Follwers: {userProfile.followers.total}</p>
-      <p>Email: {userProfile.email}</p>
-      {/* add more info here */}
+      <UserProfile userProfile={userProfile} />
+      <Playlists />
+      <TopTracks />
     </main>
   );
 };
