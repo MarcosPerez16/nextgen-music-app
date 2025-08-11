@@ -20,6 +20,12 @@ export const authOptions: NextAuthOptions = {
       // these identify our app to spotify's servers
       clientId: process.env.SPOTIFY_CLIENT_ID!,
       clientSecret: process.env.SPOTIFY_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          scope:
+            "user-read-email user-read-private playlist-read-private user-top-read",
+        },
+      },
     }),
   ],
   //   functions that run during different parts of the auth process
