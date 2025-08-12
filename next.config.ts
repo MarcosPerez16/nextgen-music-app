@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "**.fbcdn.net",
       },
+      {
+        protocol: "https",
+        hostname: "**.scdn.co",
+      },
+      {
+        protocol: "https",
+        hostname: "**.spotifycdn.com",
+      },
     ],
   },
 };
