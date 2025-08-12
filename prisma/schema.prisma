@@ -15,11 +15,56 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  spotifyId    String   @unique
+  id           Int          @id @default(autoincrement())
+  spotifyId    String       @unique
   email        String?
-  accessToken  String
-  refreshToken String
-  expiresAt    DateTime
-  createdAt    DateTime @default(now())
+  accessToken  String?
+  refreshToken String?
+  expiresAt    DateTime?
+  createdAt    DateTime     @default(now())
+  playlist     Playlist[]
+  LikedTrack   LikedTrack[]
+}
+
+model Track {
+  id            Int             @id @default(autoincrement())
+  spotifyId     String          @unique
+  name          String
+  artist        String
+  album         String
+  duration_ms   Int
+  imageUrl      String?
+  LikedTrack    LikedTrack[]
+  PlaylistTrack PlaylistTrack[]
+}
+
+model Playlist {
+  id            Int             @id @default(autoincrement())
+  name          String
+  imageUrl      String?
+  user          User            @relation(fields: [userId], references: [id])
+  userId        Int
+  createdAt     DateTime        @default(now())
+  description   String?
+  isPublic      Boolean
+  PlaylistTrack PlaylistTrack[]
+}
+
+model LikedTrack {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  track     Track    @relation(fields: [trackId], references: [id])
+  trackId   Int
+  createdAt DateTime @default(now())
+}
+
+model PlaylistTrack {
+  id         Int      @id @default(autoincrement())
+  playlist   Playlist @relation(fields: [playlistId], references: [id])
+  playlistId Int
+  track      Track    @relation(fields: [trackId], references: [id])
+  trackId    Int
+  createdAt  DateTime @default(now())
+  position   Int
 }
