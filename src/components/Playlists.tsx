@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { SpotifyPlaylist } from "@/types/spotify";
+import PlaylistCard from "./PlaylistCard";
 
 const Playlists = () => {
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[] | null>(null);
@@ -28,10 +29,16 @@ const Playlists = () => {
 
   return (
     <div>
-      <h2>Your Playlists</h2>
-      {playlists && Array.isArray(playlists)
-        ? `Found ${playlists.length} playlists!`
-        : "No playlists"}
+      <h2 className="text-center p-10">Your Playlists</h2>
+      {playlists && Array.isArray(playlists) ? (
+        <div className="grid grid-cols-3 gap-4">
+          {playlists.slice(0, 6).map((playlist) => (
+            <PlaylistCard key={playlist.id} playlist={playlist} />
+          ))}
+        </div>
+      ) : (
+        "No playlists found"
+      )}
     </div>
   );
 };
