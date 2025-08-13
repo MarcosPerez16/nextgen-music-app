@@ -81,3 +81,30 @@ export const fetchSpotifyUserTopTracks = async (userId: string) => {
 
   return { tracks: data };
 };
+
+//SEARCH FUNCTION
+export const fetchSpotifyTracks = async (userId: string, query: string) => {
+  //grab valid user access token
+  const accessToken = await getValidAccessToken(userId);
+
+  //no valid access token throw error
+  if (!accessToken) {
+    throw new Error("User must be logged in");
+  }
+
+  const tracks = await fetch(
+    `https://api.spotify.com/v1/search?q=${query}&type=track`,
+    {
+      method: "GET",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
+
+  if (!tracks.ok) {
+    throw new Error("could not fetch track");
+  }
+
+  const data = await tracks.json();
+
+  return { tracks: data.tracks.items };
+};

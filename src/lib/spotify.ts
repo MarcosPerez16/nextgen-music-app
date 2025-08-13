@@ -51,6 +51,10 @@ export const getValidAccessToken = async (userId: string) => {
   if (!user) {
     return null;
   }
+  //handle case where something goes wrong during auth
+  if (!user.expiresAt || !user.refreshToken) {
+    return null;
+  }
 
   //check if the access token is expired
   const currentTime = new Date();
