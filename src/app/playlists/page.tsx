@@ -1,5 +1,39 @@
+"use client";
+import DisplayPlaylists from "@/components/DisplayPlaylists";
+import PlaylistsForm from "@/components/PlaylistsForm";
+import { AppPlaylist } from "@/types/playlist";
+import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+
 const Playlists = () => {
-  return <div>Playlists</div>;
+  const [playlists, setPlaylists] = useState<AppPlaylist[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleFetchPlaylists = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/playlists");
+      const data = await response.json();
+      setIsLoading(false);
+      setPlaylists(data.playlists);
+    } catch (error) {
+      console.error("Error fetching playlists", error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    handleFetchPlaylists();
+  }, []);
+
+  return (
+    <div>
+      <h1>Create your playlists!</h1>
+      {isLoading && <Loader2 className="h-8 w-8 animate-spin" />}
+      <DisplayPlaylists playlists={playlists} />
+      <PlaylistsForm />
+    </div>
+  );
 };
 
 export default Playlists;
