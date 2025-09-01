@@ -28,10 +28,10 @@ const Playlists = () => {
 
   return (
     <div>
-      <h1>Create your playlists!</h1>
+      <h1>Browse or create your personal NextGen playlists!</h1>
       {isLoading && <Loader2 className="h-8 w-8 animate-spin" />}
+      <PlaylistsForm handleFetchPlaylists={handleFetchPlaylists} />
       <DisplayPlaylists playlists={playlists} />
-      <PlaylistsForm />
     </div>
   );
 };

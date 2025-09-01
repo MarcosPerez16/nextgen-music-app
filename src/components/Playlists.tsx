@@ -29,7 +29,7 @@ const Playlists = () => {
 
   return (
     <div>
-      <h2 className="text-center p-10">Your Playlists</h2>
+      <h2 className="text-center p-10">Your Spotify Playlists</h2>
       {playlists && Array.isArray(playlists) ? (
         <div className="grid grid-cols-3 gap-4">
           {playlists.slice(0, 6).map((playlist) => (
