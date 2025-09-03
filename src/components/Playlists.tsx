@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { SpotifyPlaylist } from "@/types/spotify";
-import PlaylistCard from "./PlaylistCard";
+import PlaylistCard from "./SpotifyPlaylistCard";
 
 const Playlists = () => {
   const [playlists, setPlaylists] = useState<SpotifyPlaylist[] | null>(null);
