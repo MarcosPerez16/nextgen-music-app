@@ -6,7 +6,7 @@ interface PlaylistCardProps {
   playlist: SpotifyPlaylist;
 }
 
-const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
+const SpotifyPlaylistCard = ({ playlist }: PlaylistCardProps) => {
   const imageUrl =
     playlist.images && playlist.images.length > 0
       ? playlist.images[0].url
@@ -33,6 +33,7 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
         {/* text on right */}
         <div className="flex-1">
           <h3 className="font-semibold text-lg">{playlist.name}</h3>
+
           <p className="text-sm text-gray-600">
             {playlist.tracks.total} tracks
           </p>
@@ -47,4 +48,4 @@ const PlaylistCard = ({ playlist }: PlaylistCardProps) => {
   );
 };
 
-export default PlaylistCard;
+export default SpotifyPlaylistCard;
