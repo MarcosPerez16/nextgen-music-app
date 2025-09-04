@@ -28,6 +28,33 @@ const CustomPlaylistCard = ({
     setEditName(playlist.name);
   };
 
+  const handleDelete = async () => {
+    //send a confirmation message
+    if (
+      !confirm(
+        "Are you sure you want to delete this playlist? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/playlists/${playlist.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete playlist");
+      }
+
+      //success - refresh the list so the deleted playlists disappears
+
+      onPlaylistUpdate();
+    } catch (error) {
+      console.error("Failed to delete playlist:", error);
+    }
+  };
+
   const handleSave = async () => {
     try {
       const response = await fetch(`/api/playlists/${playlist.id}`, {
@@ -103,9 +130,19 @@ const CustomPlaylistCard = ({
             </Button>
           </div>
         ) : (
-          <Button className="ml-4" size="sm" onClick={handleEditMode}>
-            Edit Name
-          </Button>
+          <div>
+            <Button className="ml-4" size="sm" onClick={handleEditMode}>
+              Edit Name
+            </Button>
+            <Button
+              className="ml-4"
+              size="sm"
+              onClick={handleDelete}
+              variant="destructive"
+            >
+              Delete
+            </Button>
+          </div>
         )}
       </div>
     </Card>
