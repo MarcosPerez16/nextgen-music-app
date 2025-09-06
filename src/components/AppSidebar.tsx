@@ -13,7 +13,7 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-import { Home, ListMusic, Search, User } from "lucide-react";
+import { Heart, Home, ListMusic, Search } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
@@ -36,9 +36,9 @@ const sidebarMenuItems = [
     icon: Search,
   },
   {
-    title: "Profile",
-    url: "/profile",
-    icon: User,
+    title: "Liked Tracks",
+    url: "/likedtracks",
+    icon: Heart,
   },
 ];
 
