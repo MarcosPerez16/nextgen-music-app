@@ -1,13 +1,53 @@
 import Image from "next/image";
 import { SpotifyTrack } from "@/types/spotify";
 import { Card } from "./ui/card";
+import { useState } from "react";
+import { Heart } from "lucide-react";
+import { Button } from "./ui/button";
 
 const TrackInfo = ({ track }: { track: SpotifyTrack }) => {
+  const [liked, setLiked] = useState(false);
+
   //get album artwork
   const imageUrl =
     track.album.images && track.album.images.length > 0
       ? track.album.images[0].url
       : null;
+
+  //join multiple artists names
+  const artistNames = track.artists.map((artist) => artist.name).join(", ");
+
+  const handleToggleLike = async () => {
+    try {
+      const response = await fetch("/api/tracks/like", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          spotifyId: track.id,
+          name: track.name,
+          artist: artistNames,
+          album: track.album.name,
+          duration_ms: track.duration_ms,
+          imageUrl: imageUrl,
+        }),
+      });
+
+      //check if API call was successful
+      if (!response.ok) {
+        throw new Error("");
+      }
+
+      //parse response to get liked status
+      const result = await response.json();
+
+      //update the local state to reflect new like status
+      setLiked(result.liked);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
+  };
 
   //convert from miliseconds
   const formatDuration = (ms: number) => {
@@ -15,9 +55,6 @@ const TrackInfo = ({ track }: { track: SpotifyTrack }) => {
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
-
-  //join multiple artists names
-  const artistNames = track.artists.map((artist) => artist.name).join(", ");
 
   return (
     <Card className="p-4 mb-4">
@@ -43,6 +80,12 @@ const TrackInfo = ({ track }: { track: SpotifyTrack }) => {
             {formatDuration(track.duration_ms)}
           </p>
         </div>
+        <Button onClick={handleToggleLike} variant="ghost" size="sm">
+          <Heart
+            className={liked ? "text-red-500" : "text-gray-400"}
+            fill={liked ? "red" : "none"}
+          />
+        </Button>
       </div>
     </Card>
   );
