@@ -74,10 +74,19 @@ export async function POST(request: Request) {
           artist: trackData.artist,
           album: trackData.album,
           duration_ms: trackData.duration_ms,
+          imageUrl: trackData.imageUrl,
         },
       });
     } else {
-      track = existingTrack;
+      // Update existing track if it doesn't have an imageUrl
+      if (!existingTrack.imageUrl && trackData.imageUrl) {
+        track = await prisma.track.update({
+          where: { id: existingTrack.id },
+          data: { imageUrl: trackData.imageUrl },
+        });
+      } else {
+        track = existingTrack;
+      }
     }
 
     //check if like relationship already exists between user and track
@@ -106,6 +115,7 @@ export async function POST(request: Request) {
           trackId: track.id,
         },
       });
+      console.log("Track data received:", trackData);
       return Response.json({ liked: true, message: "Track liked" });
     }
   } catch (error) {
