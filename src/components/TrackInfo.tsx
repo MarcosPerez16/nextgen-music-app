@@ -1,12 +1,40 @@
 import Image from "next/image";
 import { SpotifyTrack } from "@/types/spotify";
 import { Card } from "./ui/card";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "./ui/button";
 
-const TrackInfo = ({ track }: { track: SpotifyTrack }) => {
+const TrackInfo = ({
+  track,
+  showLikeButton = true,
+}: {
+  track: SpotifyTrack;
+  showLikeButton?: boolean;
+}) => {
   const [liked, setLiked] = useState(false);
+
+  useEffect(() => {
+    const checkLikeStatus = async () => {
+      //only check if we are showing the like button
+      if (!showLikeButton) return;
+
+      try {
+        const response = await fetch(
+          `/api/tracks/check-like?spotifyId=${track.id}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setLiked(data.liked);
+        }
+      } catch (error) {
+        console.error("Error checking like status:", error);
+      }
+    };
+
+    checkLikeStatus();
+  }, [track.id, showLikeButton]);
 
   //get album artwork
   const imageUrl =
@@ -80,12 +108,14 @@ const TrackInfo = ({ track }: { track: SpotifyTrack }) => {
             {formatDuration(track.duration_ms)}
           </p>
         </div>
-        <Button onClick={handleToggleLike} variant="ghost" size="sm">
-          <Heart
-            className={liked ? "text-red-500" : "text-gray-400"}
-            fill={liked ? "red" : "none"}
-          />
-        </Button>
+        {showLikeButton && (
+          <Button onClick={handleToggleLike} variant="ghost" size="sm">
+            <Heart
+              className={liked ? "text-red-500" : "text-gray-400"}
+              fill={liked ? "red" : "none"}
+            />
+          </Button>
+        )}
       </div>
     </Card>
   );
