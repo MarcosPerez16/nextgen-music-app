@@ -51,7 +51,7 @@ export async function GET() {
         createdAt: "desc",
       },
     });
-    console.log("Raw track from DB:", likedTracks[0].track);
+
     //transform data to extract just the track info
     const tracks = likedTracks.map((likedTrack) => ({
       id: likedTrack.track.spotifyId,
