@@ -115,7 +115,7 @@ export async function POST(request: Request) {
           trackId: track.id,
         },
       });
-      console.log("Track data received:", trackData);
+
       return Response.json({ liked: true, message: "Track liked" });
     }
   } catch (error) {
