@@ -1,18 +1,25 @@
 import Image from "next/image";
-import { SpotifyTrack } from "@/types/spotify";
+import { TrackInfoProps } from "@/types/spotify";
 import { Card } from "./ui/card";
 import { useEffect, useState } from "react";
 import { Heart } from "lucide-react";
 import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { AppPlaylist } from "@/types/playlist";
+import { toast } from "sonner";
 
 const TrackInfo = ({
   track,
   showLikeButton = true,
-}: {
-  track: SpotifyTrack;
-  showLikeButton?: boolean;
-}) => {
+  showAddToPlaylist = false,
+}: TrackInfoProps) => {
   const [liked, setLiked] = useState(false);
+  const [userPlaylists, setUserPlaylists] = useState<AppPlaylist[]>([]);
 
   useEffect(() => {
     const checkLikeStatus = async () => {
@@ -77,6 +84,48 @@ const TrackInfo = ({
     }
   };
 
+  const fetchUserPlaylists = async () => {
+    try {
+      const response = await fetch("/api/playlists");
+      if (response.ok) {
+        const data = await response.json();
+        setUserPlaylists(data.playlists);
+      }
+    } catch (error) {
+      console.error("Error fetching playlists", error);
+    }
+  };
+
+  const handleAddToPlaylist = async (playlistId: number) => {
+    try {
+      const response = await fetch(`/api/playlists/${playlistId}/tracks`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          spotifyId: track.id,
+          name: track.name,
+          artist: artistNames,
+          album: track.album.name,
+          duration_ms: track.duration_ms,
+          imageUrl: imageUrl,
+        }),
+      });
+
+      if (response.ok) {
+        toast.success("Track added to playlist successfully");
+      } else if (response.status === 409) {
+        toast.error("Track is already in this playlist");
+      } else {
+        toast.error("Failed to add track to playlist");
+      }
+    } catch (error) {
+      console.error("Error adding track to playlist:", error);
+      toast.error("Failed to add track to playlist");
+    }
+  };
+
   //convert from miliseconds
   const formatDuration = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
@@ -115,6 +164,31 @@ const TrackInfo = ({
               fill={liked ? "red" : "none"}
             />
           </Button>
+        )}
+        {showAddToPlaylist && (
+          <DropdownMenu
+            onOpenChange={(open) => {
+              if (open) {
+                fetchUserPlaylists();
+              }
+            }}
+          >
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                Add to Playlist
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {userPlaylists.map((playlist) => (
+                <DropdownMenuItem
+                  key={playlist.id}
+                  onClick={() => handleAddToPlaylist(playlist.id)}
+                >
+                  {playlist.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
       </div>
     </Card>

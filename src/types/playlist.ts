@@ -6,4 +6,7 @@ export interface AppPlaylist {
   createdAt: string;
   description?: string | null;
   isPublic: boolean;
+  _count?: {
+    PlaylistTrack: number;
+  };
 }

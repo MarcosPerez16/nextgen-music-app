@@ -104,3 +104,9 @@ export interface SpotifyTrack {
     spotify: string;
   };
 }
+
+export interface TrackInfoProps {
+  track: SpotifyTrack;
+  showLikeButton?: boolean;
+  showAddToPlaylist?: boolean;
+}
