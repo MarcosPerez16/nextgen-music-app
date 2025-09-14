@@ -88,7 +88,10 @@ export async function PUT(
   }
 }
 
-export async function DELETE({ params }: { params: { id: string } }) {
+export async function DELETE(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
   //get users session
   const session = await getServerSession(authOptions);
 
@@ -121,7 +124,8 @@ export async function DELETE({ params }: { params: { id: string } }) {
   }
 
   //get playlist ID from params, convert to number
-  const playlistId = parseInt(params.id);
+  const { id } = await params;
+  const playlistId = parseInt(id);
 
   //check if its a valid number
   if (isNaN(playlistId)) {
@@ -149,7 +153,14 @@ export async function DELETE({ params }: { params: { id: string } }) {
   }
 
   try {
-    //delete playlist
+    //first delete all tracks in the playlist
+    await prisma.playlistTrack.deleteMany({
+      where: {
+        playlistId: playlistId,
+      },
+    });
+
+    //then delete the playlist itself
     await prisma.playlist.delete({
       where: {
         id: playlistId,
