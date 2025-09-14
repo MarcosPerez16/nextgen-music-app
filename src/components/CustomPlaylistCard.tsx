@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 const CustomPlaylistCard = ({
   playlist,
@@ -14,6 +15,12 @@ const CustomPlaylistCard = ({
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(playlist.name);
+
+  const router = useRouter();
+
+  const handleView = () => {
+    router.push(`/playlists/${playlist.id}`);
+  };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditName(event.target.value);
@@ -118,6 +125,9 @@ const CustomPlaylistCard = ({
 
           <p className="text-gray-500 text-sm">{playlist.description}</p>
           <p className="text-gray-500 text-sm">{formatCreatedAt()}</p>
+          <p className="text-gray-500 text-sm">
+            {playlist._count?.PlaylistTrack || 0} tracks
+          </p>
           {playlist.isPublic ? "Public" : "Private"}
         </div>
         {isEditing ? (
@@ -131,6 +141,9 @@ const CustomPlaylistCard = ({
           </div>
         ) : (
           <div>
+            <Button className="ml-4" size="sm" onClick={handleView}>
+              View
+            </Button>
             <Button className="ml-4" size="sm" onClick={handleEditMode}>
               Edit Name
             </Button>

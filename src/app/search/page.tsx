@@ -54,7 +54,7 @@ const Search = () => {
       {!isLoading && tracks.length > 0 && (
         <div>
           {tracks.map((track) => (
-            <TrackInfo key={track.id} track={track} />
+            <TrackInfo key={track.id} track={track} showAddToPlaylist={true} />
           ))}
         </div>
       )}

@@ -42,6 +42,13 @@ export async function GET() {
         //we use the users db ID, not spotify ID
         userId: user.id,
       },
+      include: {
+        _count: {
+          select: {
+            PlaylistTrack: true,
+          },
+        },
+      },
     });
 
     return Response.json({ playlists });
