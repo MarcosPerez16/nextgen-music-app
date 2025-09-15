@@ -109,4 +109,7 @@ export interface TrackInfoProps {
   track: SpotifyTrack;
   showLikeButton?: boolean;
   showAddToPlaylist?: boolean;
+  showRemoveButton?: boolean;
+  playlistId?: string;
+  deleteTrack?: (spotifyId: string) => void;
 }

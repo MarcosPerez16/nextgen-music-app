@@ -17,6 +17,9 @@ const TrackInfo = ({
   track,
   showLikeButton = true,
   showAddToPlaylist = false,
+  showRemoveButton = false,
+  playlistId,
+  deleteTrack,
 }: TrackInfoProps) => {
   const [liked, setLiked] = useState(false);
   const [userPlaylists, setUserPlaylists] = useState<AppPlaylist[]>([]);
@@ -126,6 +129,39 @@ const TrackInfo = ({
     }
   };
 
+  const handleDelete = async () => {
+    //send a confirmation message
+    if (
+      !confirm(
+        "Are you sure you want to delete this track? This action cannot be undone."
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/playlists/${playlistId}/tracks`, {
+        method: "DELETE",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          spotifyId: track.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete playlist");
+      }
+
+      deleteTrack?.(track.id);
+      toast.success("Track removed from playlist successfully");
+    } catch (error) {
+      console.error("Failed to delete playlist:", error);
+      toast.error("Failed to remove track from playlist");
+    }
+  };
+
   //convert from miliseconds
   const formatDuration = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
@@ -189,6 +225,16 @@ const TrackInfo = ({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+        )}
+        {showRemoveButton && (
+          <Button
+            className="ml-4"
+            size="sm"
+            onClick={handleDelete}
+            variant="destructive"
+          >
+            Delete
+          </Button>
         )}
       </div>
     </Card>
