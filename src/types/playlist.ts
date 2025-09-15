@@ -10,3 +10,15 @@ export interface AppPlaylist {
     PlaylistTrack: number;
   };
 }
+
+export interface DisplayPlaylistsProps {
+  playlists: AppPlaylist[];
+  onPlaylistDelete: (playlistId: number) => void;
+  onPlaylistUpdate: () => void;
+}
+
+export interface CustomPlaylistCardProps {
+  playlist: AppPlaylist;
+  onPlaylistUpdate: () => void;
+  onPlaylistDelete: (playlistId: number) => void;
+}

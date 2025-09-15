@@ -1,18 +1,17 @@
-import { AppPlaylist } from "@/types/playlist";
 import { Card } from "./ui/card";
 import Image from "next/image";
 import { useState } from "react";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
+import { CustomPlaylistCardProps } from "@/types/playlist";
+import { toast } from "sonner";
 
 const CustomPlaylistCard = ({
   playlist,
   onPlaylistUpdate,
-}: {
-  playlist: AppPlaylist;
-  onPlaylistUpdate: () => void;
-}) => {
+  onPlaylistDelete,
+}: CustomPlaylistCardProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(playlist.name);
 
@@ -54,11 +53,11 @@ const CustomPlaylistCard = ({
         throw new Error("Failed to delete playlist");
       }
 
-      //success - refresh the list so the deleted playlists disappears
-
-      onPlaylistUpdate();
+      onPlaylistDelete(playlist.id);
+      toast.success("Playlist deleted successfully");
     } catch (error) {
       console.error("Failed to delete playlist:", error);
+      toast.error("Failed to delete playlist");
     }
   };
 

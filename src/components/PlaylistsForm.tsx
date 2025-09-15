@@ -85,7 +85,11 @@ const PlaylistsForm = ({ handleFetchPlaylists }: PlaylistsFormProps) => {
           {isLoading ? "Creating...." : "Submit"}
         </Button>
 
-        <Checkbox checked={isPublic} onCheckedChange={handleIsPublic} />
+        <Checkbox
+          className="m-4"
+          checked={isPublic}
+          onCheckedChange={handleIsPublic}
+        />
         <span>Make playlist public.</span>
       </form>
     </div>

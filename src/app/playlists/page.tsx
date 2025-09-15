@@ -26,6 +26,11 @@ const Playlists = () => {
     handleFetchPlaylists();
   }, []);
 
+  const handleDeletePlaylist = (playlistId: number) => {
+    setPlaylists((playlists) =>
+      playlists.filter((playlist) => playlist.id !== playlistId)
+    );
+  };
   return (
     <div>
       <h1>Browse or create your personal NextGen playlists!</h1>
@@ -33,6 +38,7 @@ const Playlists = () => {
       <PlaylistsForm handleFetchPlaylists={handleFetchPlaylists} />
       <DisplayPlaylists
         playlists={playlists}
+        onPlaylistDelete={handleDeletePlaylist}
         onPlaylistUpdate={handleFetchPlaylists}
       />
     </div>
