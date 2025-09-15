@@ -35,6 +35,12 @@ const CustomPlaylistTracks = () => {
     fetchPlaylistTracks();
   }, [playlistId]);
 
+  const handleDeletePlaylistTrack = (spotifyId: string) => {
+    setPlaylistTracks((currentTracks) =>
+      currentTracks.filter((track) => track.id !== spotifyId)
+    );
+  };
+
   return (
     <div>
       <h1>Playlist Tracks</h1>
@@ -43,7 +49,14 @@ const CustomPlaylistTracks = () => {
       {!isLoading && playlistTracks.length > 0 && (
         <div>
           {playlistTracks.map((track) => (
-            <TrackInfo key={track.id} track={track} showLikeButton={false} />
+            <TrackInfo
+              key={track.id}
+              track={track}
+              showLikeButton={false}
+              showRemoveButton={true}
+              playlistId={playlistId as string}
+              deleteTrack={handleDeletePlaylistTrack}
+            />
           ))}
         </div>
       )}
