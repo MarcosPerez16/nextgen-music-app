@@ -1,19 +1,18 @@
 import CustomPlaylistCard from "./CustomPlaylistCard";
-import { AppPlaylist } from "@/types/playlist";
+import { DisplayPlaylistsProps } from "@/types/playlist";
 
 const DisplayPlaylists = ({
   playlists,
+  onPlaylistDelete,
   onPlaylistUpdate,
-}: {
-  playlists: AppPlaylist[];
-  onPlaylistUpdate: () => void;
-}) => {
+}: DisplayPlaylistsProps) => {
   return (
     <div>
       {playlists.map((playlist) => (
         <CustomPlaylistCard
           key={playlist.id}
           playlist={playlist}
+          onPlaylistDelete={onPlaylistDelete}
           onPlaylistUpdate={onPlaylistUpdate}
         />
       ))}
