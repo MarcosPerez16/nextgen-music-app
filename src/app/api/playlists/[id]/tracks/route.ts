@@ -42,7 +42,8 @@ export async function GET(
   }
 
   //get playlist ID from params and convert to number
-  const playlistId = parseInt(params.id);
+  const resolvedParams = await params;
+  const playlistId = parseInt(resolvedParams.id);
 
   //check if its a valid number
   if (isNaN(playlistId)) {
@@ -146,7 +147,8 @@ export async function POST(
   }
 
   //get playlist ID from params and convert to number
-  const playlistId = parseInt(params.id);
+  const resolvedParams = await params;
+  const playlistId = parseInt(resolvedParams.id);
 
   //check if its a valid number
   if (isNaN(playlistId)) {
@@ -305,7 +307,8 @@ export async function DELETE(
   }
 
   //get playlist ID from params and convert to number
-  const playlistId = parseInt(params.id);
+  const resolvedParams = await params;
+  const playlistId = parseInt(resolvedParams.id);
 
   //check if its a valid number
   if (isNaN(playlistId)) {
