@@ -113,3 +113,68 @@ export interface TrackInfoProps {
   playlistId?: string;
   deleteTrack?: (spotifyId: string) => void;
 }
+
+//interfaces for the Web Playback SDK
+export interface SpotifyPlayer {
+  connect: () => Promise<boolean>;
+  disconnect: () => void;
+  addListener: (
+    event:
+      | "ready"
+      | "not_ready"
+      | "initialization_error"
+      | "authentication_error"
+      | "account_error"
+      | "player_state_changed",
+    callback: (data: unknown) => void
+  ) => void;
+  removeListener: (
+    event: string,
+    callback?: (...args: unknown[]) => void
+  ) => void;
+  getCurrentState: () => Promise<SpotifyPlayerState | null>;
+  setName: (name: string) => Promise<void>;
+  getVolume: () => Promise<number>;
+  setVolume: (volume: number) => Promise<void>;
+  pause: () => Promise<void>;
+  resume: () => Promise<void>;
+  togglePlay: () => Promise<void>;
+  seek: (position: number) => Promise<void>;
+  previousTrack: () => Promise<void>;
+  nextTrack: () => Promise<void>;
+}
+
+export interface SpotifyPlayerState {
+  context: {
+    uri: string;
+    metadata: unknown;
+  };
+  disallows: {
+    pausing: boolean;
+    seeking: boolean;
+    skipping_next: boolean;
+    skipping_prev: boolean;
+  };
+  paused: boolean;
+  position: number;
+  repeat_mode: number;
+  shuffle: boolean;
+  track_window: {
+    current_track: SpotifyTrack;
+    previous_tracks: SpotifyTrack[];
+    next_tracks: SpotifyTrack[];
+  };
+}
+
+// Global window extensions
+declare global {
+  interface Window {
+    onSpotifyWebPlaybackSDKReady?: () => void;
+    Spotify?: {
+      Player: new (options: {
+        name: string;
+        getOAuthToken: (cb: (token: string) => void) => void;
+      }) => SpotifyPlayer;
+    };
+  }
+}
