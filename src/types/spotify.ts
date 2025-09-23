@@ -178,3 +178,17 @@ declare global {
     };
   }
 }
+
+export interface MiniPlayerProps {
+  currentTrack: SpotifyTrack | null;
+  isPlaying: boolean;
+  position: number;
+  duration: number;
+  onPlay: () => void;
+  onPause: () => void;
+  onNext: () => void;
+  onPrevious: () => void;
+  handleSeek: (percentage: number) => void;
+  volume: number;
+  handleVolumeChange: (percentage: number) => void;
+}
