@@ -10,19 +10,36 @@ import {
   SpotifyTrack,
 } from "@/types/spotify";
 import MiniPlayer from "./MiniPlayer";
+import { usePlayerStore } from "@/lib/stores/playerStore";
 
 const WebPlaybackPlayer = () => {
   const { data: session } = useSession();
 
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [sdkLoaded, setSdkLoaded] = useState(false);
-  const [player, setPlayer] = useState<SpotifyPlayer | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTrack, setCurrentTrack] = useState<SpotifyTrack | null>(null);
-  const [position, setPosition] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [volume, setVolume] = useState(50);
+
+  const {
+    player,
+    setPlayer,
+    deviceId,
+    setDeviceId,
+    sdkLoaded,
+    setSdkLoaded,
+    isPlaying,
+    setIsPlaying,
+    currentTrack,
+    setCurrentTrack,
+    position,
+    setPosition,
+    duration,
+    setDuration,
+    volume,
+    setVolume,
+  } = usePlayerStore();
+
+  // Add these debug logs
+  console.log("WebPlaybackPlayer rendered, player exists:", !!player);
+  console.log("Device ID:", deviceId);
 
   const handlePlay = () => player?.resume();
   const handlePause = () => player?.pause();
@@ -45,6 +62,13 @@ const WebPlaybackPlayer = () => {
   };
 
   useEffect(() => {
+    console.log("WebPlaybackPlayer mounted/session changed");
+    //if player already exists, don't re-initialize
+    if (player) {
+      console.log("Player already exists, skipping initialization");
+      return;
+    }
+
     const loadSpotifySDK = () => {
       const extendedSession = session as ExtendedSession;
 
@@ -71,12 +95,13 @@ const WebPlaybackPlayer = () => {
             cb(accessToken);
           },
         });
-
+        setPlayer(player);
         player.connect();
 
         player.addListener("ready", (data) => {
           const { device_id } = data as { device_id: string };
           console.log("Ready with Device ID", device_id);
+          setDeviceId(device_id);
 
           // Get initial volume
           player.getVolume().then((volume) => {
@@ -99,7 +124,6 @@ const WebPlaybackPlayer = () => {
           }
         });
 
-        setPlayer(player);
         setSdkLoaded(true);
       };
 
@@ -129,7 +153,10 @@ const WebPlaybackPlayer = () => {
     };
 
     checkPremiumStatus();
-  }, [session]);
+    return () => {
+      console.log("WebPlaybackPlayer cleanup running");
+    };
+  }, [session, player]);
 
   if (isLoading) {
     return <div>Checking subscription status...</div>;

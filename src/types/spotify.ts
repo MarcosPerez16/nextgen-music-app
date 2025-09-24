@@ -112,6 +112,11 @@ export interface TrackInfoProps {
   showRemoveButton?: boolean;
   playlistId?: string;
   deleteTrack?: (spotifyId: string) => void;
+  showPlayButton?: boolean;
+}
+
+export interface TrackCardProps {
+  track: SpotifyTrack;
 }
 
 //interfaces for the Web Playback SDK

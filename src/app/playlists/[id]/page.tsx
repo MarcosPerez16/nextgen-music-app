@@ -56,6 +56,7 @@ const CustomPlaylistTracks = () => {
               showRemoveButton={true}
               playlistId={playlistId as string}
               deleteTrack={handleDeletePlaylistTrack}
+              showPlayButton={true}
             />
           ))}
         </div>
