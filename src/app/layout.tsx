@@ -39,8 +39,8 @@ export default function RootLayout({
               <SidebarTrigger />
               {children}
             </main>
-            <GlobalPlayer />
           </SidebarProvider>
+          <GlobalPlayer />
         </Providers>
         <Toaster />
       </body>

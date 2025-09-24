@@ -1,11 +1,12 @@
 import { Card, CardContent } from "./ui/card";
-import { SpotifyTrack } from "@/types/spotify";
 import Image from "next/image";
+import { Button } from "./ui/button";
+import { Play } from "lucide-react";
+import { usePlayerStore } from "@/lib/stores/playerStore";
+import { TrackCardProps } from "@/types/spotify";
 
-interface TrackCardProps {
-  track: SpotifyTrack;
-}
 const TrackCard = ({ track }: TrackCardProps) => {
+  const { deviceId } = usePlayerStore();
   //get album artwork
   const imageUrl =
     track.album.images && track.album.images.length > 0
@@ -21,6 +22,32 @@ const TrackCard = ({ track }: TrackCardProps) => {
 
   //join multiple artists names
   const artistNames = track.artists.map((artist) => artist.name).join(", ");
+
+  const handlePlayTrack = async () => {
+    if (!deviceId) {
+      console.error("No device ID available");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/spotify/play", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          trackUri: track.uri || `spotify:track:${track.id}`,
+          deviceId: deviceId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to play track");
+      }
+    } catch (error) {
+      console.error("Error playing track:", error);
+    }
+  };
 
   return (
     <Card className="mb-4">
@@ -48,6 +75,9 @@ const TrackCard = ({ track }: TrackCardProps) => {
             {formatDuration(track.duration_ms)}
           </p>
         </div>
+        <Button onClick={handlePlayTrack} variant="outline" size="sm">
+          <Play className="h-4 w-4" />
+        </Button>
       </CardContent>
     </Card>
   );

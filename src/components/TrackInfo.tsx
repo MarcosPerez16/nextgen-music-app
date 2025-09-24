@@ -2,7 +2,7 @@ import Image from "next/image";
 import { TrackInfoProps } from "@/types/spotify";
 import { Card } from "./ui/card";
 import { useEffect, useState } from "react";
-import { Heart } from "lucide-react";
+import { Heart, Play } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -12,17 +12,20 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AppPlaylist } from "@/types/playlist";
 import { toast } from "sonner";
+import { usePlayerStore } from "@/lib/stores/playerStore";
 
 const TrackInfo = ({
   track,
   showLikeButton = true,
   showAddToPlaylist = false,
   showRemoveButton = false,
+  showPlayButton = false,
   playlistId,
   deleteTrack,
 }: TrackInfoProps) => {
   const [liked, setLiked] = useState(false);
   const [userPlaylists, setUserPlaylists] = useState<AppPlaylist[]>([]);
+  const { deviceId } = usePlayerStore();
 
   useEffect(() => {
     const checkLikeStatus = async () => {
@@ -162,6 +165,39 @@ const TrackInfo = ({
     }
   };
 
+  const handlePlayTrack = async () => {
+    if (!deviceId) {
+      console.error("No device ID available");
+      //possibly show a toast notification
+      return;
+    }
+
+    // Add these debug logs
+    console.log("Track object:", track);
+    console.log("Track URI:", track.uri);
+    console.log("Device ID:", deviceId);
+
+    try {
+      const response = await fetch("/api/spotify/play", {
+        method: "PUT",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          trackUri: track.uri || `spotify:track:${track.id}`,
+          deviceId: deviceId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to play track");
+      }
+      //maybe show toast notification
+    } catch (error) {
+      console.error("Error playing track:", error);
+    }
+  };
+
   //convert from miliseconds
   const formatDuration = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
@@ -225,6 +261,11 @@ const TrackInfo = ({
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
+        )}
+        {showPlayButton && (
+          <Button onClick={handlePlayTrack} variant="outline" size="sm">
+            <Play className="h-4 w-4" />
+          </Button>
         )}
         {showRemoveButton && (
           <Button

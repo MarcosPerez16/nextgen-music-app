@@ -45,7 +45,12 @@ const LikedTracks = () => {
       {!isLoading && likedTracks.length > 0 && (
         <div>
           {likedTracks.map((track) => (
-            <TrackInfo key={track.id} track={track} showLikeButton={false} />
+            <TrackInfo
+              key={track.id}
+              track={track}
+              showLikeButton={false}
+              showPlayButton={true}
+            />
           ))}
         </div>
       )}
