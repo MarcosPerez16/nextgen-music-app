@@ -3,133 +3,28 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ExtendedSession } from "@/types/auth";
-import "@/types/spotify";
-import {
-  SpotifyPlayer,
-  SpotifyPlayerState,
-  SpotifyTrack,
-} from "@/types/spotify";
 import MiniPlayer from "./MiniPlayer";
 import { usePlayerStore } from "@/lib/stores/playerStore";
+import spotifyPlayerManager from "@/lib/spotifyPlayerManager";
 
 const WebPlaybackPlayer = () => {
   const { data: session } = useSession();
-
   const [isPremium, setIsPremium] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   const {
-    player,
-    setPlayer,
     deviceId,
-    setDeviceId,
-    sdkLoaded,
-    setSdkLoaded,
-    isPlaying,
-    setIsPlaying,
     currentTrack,
-    setCurrentTrack,
+    isPlaying,
     position,
-    setPosition,
     duration,
-    setDuration,
     volume,
+    handleExternalUpdate,
     setVolume,
   } = usePlayerStore();
 
-  // Add these debug logs
-  console.log("WebPlaybackPlayer rendered, player exists:", !!player);
-  console.log("Device ID:", deviceId);
-
-  const handlePlay = () => player?.resume();
-  const handlePause = () => player?.pause();
-  const handleNext = () => player?.nextTrack();
-  const handlePrevious = () => player?.previousTrack();
-
-  const handleSeek = (percentage: number) => {
-    if (player && duration > 0) {
-      const newPosition = (percentage / 100) * duration;
-      player.seek(newPosition);
-    }
-  };
-
-  const handleVolumeChange = (percentage: number) => {
-    if (player) {
-      const volumeLevel = percentage / 100;
-      player.setVolume(volumeLevel);
-      setVolume(percentage);
-    }
-  };
-
+  // Check premium status when session changes
   useEffect(() => {
-    console.log("WebPlaybackPlayer mounted/session changed");
-    //if player already exists, don't re-initialize
-    if (player) {
-      console.log("Player already exists, skipping initialization");
-      return;
-    }
-
-    const loadSpotifySDK = () => {
-      const extendedSession = session as ExtendedSession;
-
-      if (!extendedSession.accessToken) {
-        console.error("No access token available");
-        return;
-      }
-
-      const accessToken = extendedSession.accessToken;
-
-      if (document.querySelector('script[src*="spotify-player"]')) {
-        setSdkLoaded(true);
-        return;
-      }
-
-      const script = document.createElement("script");
-      script.src = "https://sdk.scdn.co/spotify-player.js";
-      script.async = true;
-
-      window.onSpotifyWebPlaybackSDKReady = () => {
-        const player = new window.Spotify!.Player({
-          name: "My Web Player",
-          getOAuthToken: (cb) => {
-            cb(accessToken);
-          },
-        });
-        setPlayer(player);
-        player.connect();
-
-        player.addListener("ready", (data) => {
-          const { device_id } = data as { device_id: string };
-          console.log("Ready with Device ID", device_id);
-          setDeviceId(device_id);
-
-          // Get initial volume
-          player.getVolume().then((volume) => {
-            setVolume(volume * 100);
-          });
-        });
-
-        player.addListener("not_ready", (data) => {
-          const { device_id } = data as { device_id: string };
-          console.log("Device ID has gone offline", device_id);
-        });
-
-        player.addListener("player_state_changed", (data) => {
-          const state = data as SpotifyPlayerState | null;
-          if (state) {
-            setIsPlaying(!state.paused);
-            setCurrentTrack(state.track_window.current_track);
-            setPosition(state.position);
-            setDuration(state.track_window.current_track.duration_ms);
-          }
-        });
-
-        setSdkLoaded(true);
-      };
-
-      document.head.appendChild(script);
-    };
-
     const checkPremiumStatus = async () => {
       if (!session) {
         setIsLoading(false);
@@ -139,12 +34,7 @@ const WebPlaybackPlayer = () => {
       try {
         const response = await fetch("/api/user/premium-status");
         const premiumStatusData = await response.json();
-
         setIsPremium(premiumStatusData.isPremium);
-
-        if (premiumStatusData.isPremium) {
-          loadSpotifySDK();
-        }
       } catch (error) {
         console.error("Failed to check premium status.", error);
       } finally {
@@ -153,10 +43,47 @@ const WebPlaybackPlayer = () => {
     };
 
     checkPremiumStatus();
-    return () => {
-      console.log("WebPlaybackPlayer cleanup running");
+  }, [session]);
+
+  // Set up external player callback
+  useEffect(() => {
+    spotifyPlayerManager.setStateUpdateCallback(handleExternalUpdate);
+  }, [handleExternalUpdate]);
+
+  // Initialize player when premium status becomes true
+  useEffect(() => {
+    const initializeExternalPlayer = async () => {
+      const extendedSession = session as ExtendedSession;
+      if (extendedSession?.accessToken) {
+        await spotifyPlayerManager.initialize(extendedSession.accessToken);
+      }
     };
-  }, [session, player]);
+
+    if (isPremium && session) {
+      initializeExternalPlayer();
+    }
+  }, [isPremium, session]);
+
+  // Player control handlers
+  const handlePlay = () => spotifyPlayerManager.player?.resume();
+  const handlePause = () => spotifyPlayerManager.player?.pause();
+  const handleNext = () => spotifyPlayerManager.player?.nextTrack();
+  const handlePrevious = () => spotifyPlayerManager.player?.previousTrack();
+
+  const handleSeek = (percentage: number) => {
+    if (spotifyPlayerManager.player && duration > 0) {
+      const newPosition = (percentage / 100) * duration;
+      spotifyPlayerManager.player.seek(newPosition);
+    }
+  };
+
+  const handleVolumeChange = (percentage: number) => {
+    if (spotifyPlayerManager.player) {
+      const volumeLevel = percentage / 100;
+      spotifyPlayerManager.player.setVolume(volumeLevel);
+      setVolume(percentage);
+    }
+  };
 
   if (isLoading) {
     return <div>Checking subscription status...</div>;
@@ -168,7 +95,7 @@ const WebPlaybackPlayer = () => {
 
   return (
     <div>
-      {!sdkLoaded ? (
+      {!deviceId ? (
         <p>Loading player...</p>
       ) : (
         <MiniPlayer
