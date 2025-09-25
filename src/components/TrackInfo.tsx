@@ -172,11 +172,6 @@ const TrackInfo = ({
       return;
     }
 
-    // Add these debug logs
-    console.log("Track object:", track);
-    console.log("Track URI:", track.uri);
-    console.log("Device ID:", deviceId);
-
     try {
       const response = await fetch("/api/spotify/play", {
         method: "PUT",
