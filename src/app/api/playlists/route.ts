@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { ExtendedSession } from "@/types/auth";
 import { Session } from "next-auth";
 import { PrismaClient } from "@prisma/client";
