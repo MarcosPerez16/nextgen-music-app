@@ -19,6 +19,7 @@ import { signOut } from "next-auth/react";
 import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
 import NextImage from "next/image";
+import { useRouter } from "next/navigation";
 
 const sidebarMenuItems = [
   {
@@ -45,6 +46,17 @@ const sidebarMenuItems = [
 
 export function AppSidebar() {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+    router.push("/");
+  };
+
+  //hide sidebar if no sesion
+  if (!session) {
+    return null;
+  }
 
   return (
     <Sidebar>
@@ -85,7 +97,7 @@ export function AppSidebar() {
           </div>
         )}
         <Button
-          onClick={() => signOut()}
+          onClick={handleLogout}
           variant="outline"
           className="w-full mt-2"
         >
