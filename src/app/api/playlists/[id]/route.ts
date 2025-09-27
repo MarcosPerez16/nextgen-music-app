@@ -124,7 +124,7 @@ export async function DELETE(
   }
 
   //get playlist ID from params, convert to number
-  const { id } = await params;
+  const { id } = params;
   const playlistId = parseInt(id);
 
   //check if its a valid number
