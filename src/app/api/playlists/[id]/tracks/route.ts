@@ -3,18 +3,21 @@ import { authOptions } from "@/lib/auth";
 import { ExtendedSession } from "@/types/auth";
 import { Session } from "next-auth";
 import { PrismaClient } from "@prisma/client";
+import { NextRequest } from "next/server";
 
 const prisma = new PrismaClient();
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  // Await the params since they're now a Promise in Next.js 15
+  const { id } = await context.params;
+
   //get users session from nextauth
   const session = await getServerSession(authOptions);
 
   //validate session
-
   if (!session) {
     return Response.json(
       { error: "You must be logged in to view playlist tracks" },
@@ -42,8 +45,7 @@ export async function GET(
   }
 
   //get playlist ID from params and convert to number
-  const resolvedParams = await params;
-  const playlistId = parseInt(resolvedParams.id);
+  const playlistId = parseInt(id);
 
   //check if its a valid number
   if (isNaN(playlistId)) {
@@ -112,14 +114,16 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  // Await the params since they're now a Promise in Next.js 15
+  const { id } = await context.params;
+
   //get users session from nextauth
   const session = await getServerSession(authOptions);
 
   //validate session
-
   if (!session) {
     return Response.json(
       { error: "You must be logged in to add tracks to a playlist" },
@@ -147,8 +151,7 @@ export async function POST(
   }
 
   //get playlist ID from params and convert to number
-  const resolvedParams = await params;
-  const playlistId = parseInt(resolvedParams.id);
+  const playlistId = parseInt(id);
 
   //check if its a valid number
   if (isNaN(playlistId)) {
@@ -179,7 +182,6 @@ export async function POST(
   const trackData = await request.json();
 
   //validate track data
-
   if (
     !trackData.spotifyId ||
     !trackData.name ||
@@ -195,7 +197,6 @@ export async function POST(
 
   try {
     //if valid data, check if it exists in our track table
-
     const existingTrack = await prisma.track.findUnique({
       where: {
         spotifyId: trackData.spotifyId,
@@ -272,14 +273,16 @@ export async function POST(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  // Await the params since they're now a Promise in Next.js 15
+  const { id } = await context.params;
+
   //get users session from nextauth
   const session = await getServerSession(authOptions);
 
   //validate session
-
   if (!session) {
     return Response.json(
       { error: "You must be logged in to remove tracks from a playlist" },
@@ -307,8 +310,7 @@ export async function DELETE(
   }
 
   //get playlist ID from params and convert to number
-  const resolvedParams = await params;
-  const playlistId = parseInt(resolvedParams.id);
+  const playlistId = parseInt(id);
 
   //check if its a valid number
   if (isNaN(playlistId)) {
@@ -341,7 +343,6 @@ export async function DELETE(
   const trackData = await request.json();
 
   //validate track data
-
   if (!trackData.spotifyId) {
     return Response.json(
       { error: "Missing spotify ID for track to remove" },

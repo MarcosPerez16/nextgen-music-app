@@ -3,13 +3,17 @@ import { authOptions } from "@/lib/auth";
 import { ExtendedSession } from "@/types/auth";
 import { Session } from "next-auth";
 import { PrismaClient } from "@prisma/client";
+import { NextRequest } from "next/server";
 
 const prisma = new PrismaClient();
 
 export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  // Await the params since they're now a Promise in Next.js 15
+  const { id } = await context.params;
+
   //get users session
   const session = await getServerSession(authOptions);
 
@@ -42,7 +46,7 @@ export async function PUT(
   }
 
   //get playlist ID from params, convert to number
-  const playlistId = parseInt(params.id);
+  const playlistId = parseInt(id);
 
   //check if it's a valid number
   if (isNaN(playlistId)) {
@@ -89,9 +93,12 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
 ) {
+  // Await the params since they're now a Promise in Next.js 15
+  const { id } = await context.params;
+
   //get users session
   const session = await getServerSession(authOptions);
 
@@ -124,7 +131,6 @@ export async function DELETE(
   }
 
   //get playlist ID from params, convert to number
-  const { id } = params;
   const playlistId = parseInt(id);
 
   //check if its a valid number
