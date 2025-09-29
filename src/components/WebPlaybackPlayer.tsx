@@ -64,6 +64,30 @@ const WebPlaybackPlayer = () => {
     }
   }, [isPremium, session]);
 
+  // // real-time position updates
+  useEffect(() => {
+    let positionInterval: NodeJS.Timeout;
+
+    if (isPlaying && currentTrack) {
+      positionInterval = setInterval(() => {
+        const currentPos = usePlayerStore.getState().position;
+        const duration = usePlayerStore.getState().duration;
+
+        // Only increment if we haven't reached the end
+        if (currentPos + 1000 <= duration) {
+          usePlayerStore.getState().setPosition(currentPos + 1000);
+        }
+      }, 1000);
+    }
+
+    // Cleanup interval when paused or component unmounts
+    return () => {
+      if (positionInterval) {
+        clearInterval(positionInterval);
+      }
+    };
+  }, [isPlaying, currentTrack]);
+
   // Player control handlers
   const handlePlay = () => spotifyPlayerManager.player?.resume();
   const handlePause = () => spotifyPlayerManager.player?.pause();
