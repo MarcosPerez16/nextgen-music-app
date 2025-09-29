@@ -113,10 +113,19 @@ export interface TrackInfoProps {
   playlistId?: string;
   deleteTrack?: (spotifyId: string) => void;
   showPlayButton?: boolean;
+
+  //queue context props
+  allTracks?: SpotifyTrack[];
+  trackIndex?: number;
+  playbackContext?: string;
 }
 
 export interface TrackCardProps {
   track: SpotifyTrack;
+  //queue context props
+  allTracks?: SpotifyTrack[];
+  trackIndex?: number;
+  playbackContext?: string;
 }
 
 //interfaces for the Web Playback SDK

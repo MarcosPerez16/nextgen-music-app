@@ -32,8 +32,14 @@ const TopTracks = () => {
       <h2 className="text-center p-10">Your Top Tracks</h2>
       {topTracks && Array.isArray(topTracks) ? (
         <div className="grid grid-cols-3 gap-4">
-          {topTracks.slice(0, 6).map((track) => (
-            <TrackCard key={track.id} track={track} />
+          {topTracks.slice(0, 6).map((track, index) => (
+            <TrackCard
+              key={track.id}
+              track={track}
+              allTracks={topTracks.slice(0, 6)}
+              trackIndex={index}
+              playbackContext="dashboard"
+            />
           ))}
         </div>
       ) : (

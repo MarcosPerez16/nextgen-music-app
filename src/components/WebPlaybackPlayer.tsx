@@ -67,8 +67,65 @@ const WebPlaybackPlayer = () => {
   // Player control handlers
   const handlePlay = () => spotifyPlayerManager.player?.resume();
   const handlePause = () => spotifyPlayerManager.player?.pause();
-  const handleNext = () => spotifyPlayerManager.player?.nextTrack();
-  const handlePrevious = () => spotifyPlayerManager.player?.previousTrack();
+
+  // Queue-aware next/previous handlers
+  const handleNext = async () => {
+    const nextTrack = usePlayerStore.getState().nextTrack();
+
+    if (nextTrack && deviceId) {
+      // Play the next track from our queue
+      try {
+        const response = await fetch("/api/spotify/play", {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            trackUri: nextTrack.uri || `spotify:track:${nextTrack.id}`,
+            deviceId: deviceId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to play next track");
+        }
+      } catch (error) {
+        console.error("Error playing next track:", error);
+      }
+    } else {
+      // No more tracks in queue
+      console.log("End of queue reached");
+    }
+  };
+
+  const handlePrevious = async () => {
+    const prevTrack = usePlayerStore.getState().previousTrack();
+
+    if (prevTrack && deviceId) {
+      // Play the previous track from our queue
+      try {
+        const response = await fetch("/api/spotify/play", {
+          method: "PUT",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            trackUri: prevTrack.uri || `spotify:track:${prevTrack.id}`,
+            deviceId: deviceId,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to play previous track");
+        }
+      } catch (error) {
+        console.error("Error playing previous track:", error);
+      }
+    } else {
+      // No previous tracks in queue
+      console.log("Beginning of queue reached");
+    }
+  };
 
   const handleSeek = (percentage: number) => {
     if (spotifyPlayerManager.player && duration > 0) {

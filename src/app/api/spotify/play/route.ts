@@ -17,7 +17,25 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
-    const { trackUri, deviceId } = await request.json();
+    const { trackUri, trackUris, offset, deviceId } = await request.json();
+
+    // Determine the playback payload
+    let playbackPayload;
+
+    if (trackUris && trackUris.length > 0) {
+      // Play multiple tracks (queue context)
+      playbackPayload = {
+        uris: trackUris,
+        ...(offset !== undefined && { offset: { position: offset } }),
+      };
+    } else if (trackUri) {
+      // FALLBACK: Play single track (old behavior)
+      playbackPayload = {
+        uris: [trackUri],
+      };
+    } else {
+      return Response.json({ error: "No tracks to play" }, { status: 400 });
+    }
 
     const response = await fetch(
       `https://api.spotify.com/v1/me/player/play?device_id=${deviceId}`,
@@ -27,14 +45,11 @@ export async function PUT(request: NextRequest) {
           Authorization: `Bearer ${extendedSession.accessToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          uris: [trackUri], // Array of Spotify URIs
-        }),
+        body: JSON.stringify(playbackPayload),
       }
     );
 
     if (!response.ok) {
-      //Handle different error cases
       return Response.json(
         { error: "Playback failed" },
         { status: response.status }

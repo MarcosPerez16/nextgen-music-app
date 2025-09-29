@@ -5,8 +5,14 @@ import { Play } from "lucide-react";
 import { usePlayerStore } from "@/lib/stores/playerStore";
 import { TrackCardProps } from "@/types/spotify";
 
-const TrackCard = ({ track }: TrackCardProps) => {
+const TrackCard = ({
+  track,
+  allTracks,
+  trackIndex,
+  playbackContext,
+}: TrackCardProps) => {
   const { deviceId } = usePlayerStore();
+
   //get album artwork
   const imageUrl =
     track.album.images && track.album.images.length > 0
@@ -29,6 +35,14 @@ const TrackCard = ({ track }: TrackCardProps) => {
       return;
     }
 
+    // If we have queue context, set it up
+    if (allTracks && trackIndex !== undefined && playbackContext) {
+      // Set the queue in our store
+      usePlayerStore
+        .getState()
+        .setQueue(allTracks, trackIndex, playbackContext);
+    }
+
     try {
       const response = await fetch("/api/spotify/play", {
         method: "PUT",
@@ -36,7 +50,18 @@ const TrackCard = ({ track }: TrackCardProps) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          trackUri: track.uri || `spotify:track:${track.id}`,
+          // If we have a queue, send all track URIs
+          ...(allTracks && trackIndex !== undefined
+            ? {
+                trackUris: allTracks.map(
+                  (t) => t.uri || `spotify:track:${t.id}`
+                ),
+                offset: trackIndex, // Start at this track
+              }
+            : {
+                // FALLBACK: Single track (old behavior)
+                trackUri: track.uri || `spotify:track:${track.id}`,
+              }),
           deviceId: deviceId,
         }),
       });
