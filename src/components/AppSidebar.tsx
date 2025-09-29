@@ -20,6 +20,7 @@ import { Button } from "./ui/button";
 import { useSession } from "next-auth/react";
 import NextImage from "next/image";
 import { useRouter } from "next/navigation";
+import spotifyPlayerManager from "@/lib/spotifyPlayerManager";
 
 const sidebarMenuItems = [
   {
@@ -49,6 +50,17 @@ export function AppSidebar() {
   const router = useRouter();
 
   const handleLogout = async () => {
+    // Stop playback BEFORE logging out (while we still have authentication)
+    if (spotifyPlayerManager.player) {
+      try {
+        await spotifyPlayerManager.player.pause();
+      } catch (error) {
+        console.error("Error pausing playback:", error);
+      }
+      spotifyPlayerManager.disconnect();
+    }
+
+    // Then logout
     await signOut({ redirect: false });
     router.push("/");
   };

@@ -91,8 +91,16 @@ class SpotifyPlayerManager {
   /**
    * Clean up the player when no longer needed
    */
-  disconnect() {
+  async disconnect() {
     if (this.player) {
+      try {
+        // Wait for pause to complete before disconnecting
+        await this.player.pause();
+      } catch (error) {
+        console.error("Error pausing player:", error);
+      }
+
+      // Then disconnect
       this.player.disconnect();
       this.player = null;
       this.deviceId = null;
