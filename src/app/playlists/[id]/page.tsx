@@ -48,10 +48,13 @@ const CustomPlaylistTracks = () => {
       {isLoading && <Loader2 className="h-8 w-8 animate-spin" />}
       {!isLoading && playlistTracks.length > 0 && (
         <div>
-          {playlistTracks.map((track) => (
+          {playlistTracks.map((track, index) => (
             <TrackInfo
               key={track.id}
               track={track}
+              allTracks={playlistTracks}
+              trackIndex={index}
+              playbackContext={`playlist:${playlistId}`}
               showLikeButton={false}
               showRemoveButton={true}
               playlistId={playlistId as string}

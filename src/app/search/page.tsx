@@ -53,10 +53,13 @@ const Search = () => {
 
       {!isLoading && tracks.length > 0 && (
         <div>
-          {tracks.map((track) => (
+          {tracks.map((track, index) => (
             <TrackInfo
               key={track.id}
               track={track}
+              allTracks={tracks}
+              trackIndex={index}
+              playbackContext="search"
               showAddToPlaylist={true}
               showPlayButton={true}
             />
