@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 body {
-  background-color: white;
+  background-color: rgb(88, 28, 135);
   color: black;
   font-family: sans-serif;
 }

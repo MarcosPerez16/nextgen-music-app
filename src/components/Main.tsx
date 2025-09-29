@@ -21,7 +21,7 @@ const Main = ({ userProfile, isLoading }: MainProps) => {
   }
 
   return (
-    <main className="p-4">
+    <main className="p-6 max-w-7xl mx-auto bg-white min-h-screen">
       <UserProfile userProfile={userProfile} />
       <Playlists />
       <TopTracks />
