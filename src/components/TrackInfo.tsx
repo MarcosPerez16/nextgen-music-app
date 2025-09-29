@@ -22,6 +22,9 @@ const TrackInfo = ({
   showPlayButton = false,
   playlistId,
   deleteTrack,
+  allTracks,
+  trackIndex,
+  playbackContext,
 }: TrackInfoProps) => {
   const [liked, setLiked] = useState(false);
   const [userPlaylists, setUserPlaylists] = useState<AppPlaylist[]>([]);
@@ -168,8 +171,15 @@ const TrackInfo = ({
   const handlePlayTrack = async () => {
     if (!deviceId) {
       console.error("No device ID available");
-      //possibly show a toast notification
       return;
+    }
+
+    // If we have queue context, set it up
+    if (allTracks && trackIndex !== undefined && playbackContext) {
+      // Set the queue in our store
+      usePlayerStore
+        .getState()
+        .setQueue(allTracks, trackIndex, playbackContext);
     }
 
     try {
@@ -179,7 +189,18 @@ const TrackInfo = ({
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          trackUri: track.uri || `spotify:track:${track.id}`,
+          //If we have a queue, send all track URIs
+          ...(allTracks && trackIndex !== undefined
+            ? {
+                trackUris: allTracks.map(
+                  (t) => t.uri || `spotify:track:${t.id}`
+                ),
+                offset: trackIndex, // Start at this track
+              }
+            : {
+                // FALLBACK: Single track (old behavior)
+                trackUri: track.uri || `spotify:track:${track.id}`,
+              }),
           deviceId: deviceId,
         }),
       });
@@ -187,7 +208,6 @@ const TrackInfo = ({
       if (!response.ok) {
         throw new Error("Failed to play track");
       }
-      //maybe show toast notification
     } catch (error) {
       console.error("Error playing track:", error);
     }

@@ -14,6 +14,11 @@ interface PlayerState {
   duration: number;
   volume: number;
 
+  //Queue management
+  queue: SpotifyTrack[];
+  currentIndex: number;
+  playbackContext: string | null;
+
   //actions to update state
   setPlayer: (player: SpotifyPlayer) => void;
   setDeviceId: (deviceId: string) => void;
@@ -23,13 +28,23 @@ interface PlayerState {
   setPosition: (position: number) => void;
   setDuration: (duration: number) => void;
   setVolume: (volume: number) => void;
+
+  //Queue actions
+  setQueue: (
+    tracks: SpotifyTrack[],
+    startIndex: number,
+    context: string
+  ) => void;
+  nextTrack: () => SpotifyTrack | null;
+  previousTrack: () => SpotifyTrack | null;
+
   handleExternalUpdate: (update: {
     type: string;
     [key: string]: unknown;
   }) => void;
 }
 
-export const usePlayerStore = create<PlayerState>((set) => ({
+export const usePlayerStore = create<PlayerState>((set, get) => ({
   // Initial state values
   player: null,
   deviceId: null,
@@ -40,6 +55,11 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   duration: 0,
   volume: 50,
 
+  //Queue initial state
+  queue: [],
+  currentIndex: 0,
+  playbackContext: null,
+
   // Actions (functions that update state)
   setPlayer: (player) => set({ player }),
   setDeviceId: (deviceId) => set({ deviceId }),
@@ -49,6 +69,47 @@ export const usePlayerStore = create<PlayerState>((set) => ({
   setPosition: (position) => set({ position }),
   setDuration: (duration) => set({ duration }),
   setVolume: (volume) => set({ volume }),
+
+  //Queue management actions
+  setQueue: (tracks, startIndex, context) => {
+    set({
+      queue: tracks,
+      currentIndex: startIndex,
+      playbackContext: context,
+      currentTrack: tracks[startIndex] || null,
+    });
+  },
+
+  nextTrack: () => {
+    const state = get();
+    const nextIndex = state.currentIndex + 1;
+
+    if (nextIndex < state.queue.length) {
+      const nextTrack = state.queue[nextIndex];
+      set({
+        currentIndex: nextIndex,
+        currentTrack: nextTrack,
+      });
+      return nextTrack;
+    }
+    return null; // End of queue
+  },
+
+  previousTrack: () => {
+    const state = get();
+    const prevIndex = state.currentIndex - 1;
+
+    if (prevIndex >= 0) {
+      const prevTrack = state.queue[prevIndex];
+      set({
+        currentIndex: prevIndex,
+        currentTrack: prevTrack,
+      });
+      return prevTrack;
+    }
+    return null; // Beginning of queue
+  },
+
   handleExternalUpdate: (update: { type: string; [key: string]: unknown }) => {
     if (update.type === "DEVICE_READY") {
       if (typeof update.deviceId === "string") {
