@@ -1,5 +1,5 @@
 "use client";
-import Footer from "@/components/Footer";
+
 import Main from "@/components/Main";
 import { useSession } from "next-auth/react";
 
@@ -42,8 +42,6 @@ const DashBoard = () => {
   return (
     <div>
       <Main userProfile={userProfile} isLoading={isLoadingProfile} />
-
-      <Footer />
     </div>
   );
 };
