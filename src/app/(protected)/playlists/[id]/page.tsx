@@ -62,7 +62,7 @@ const CustomPlaylistTracks = () => {
       )}
 
       {!isLoading && playlistTracks.length > 0 && (
-        <div className="space-y-3 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {playlistTracks.map((track, index) => (
             <TrackInfo
               key={track.id}
@@ -74,7 +74,6 @@ const CustomPlaylistTracks = () => {
               showRemoveButton={true}
               playlistId={playlistId as string}
               deleteTrack={handleDeletePlaylistTrack}
-              showPlayButton={true}
             />
           ))}
         </div>

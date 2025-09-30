@@ -112,7 +112,6 @@ export interface TrackInfoProps {
   showRemoveButton?: boolean;
   playlistId?: string;
   deleteTrack?: (spotifyId: string) => void;
-  showPlayButton?: boolean;
   onUnlike?: (spotifyId: string) => void;
 
   //queue context props

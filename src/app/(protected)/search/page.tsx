@@ -76,7 +76,7 @@ const Search = () => {
 
       {/* Search results */}
       {!isLoading && tracks.length > 0 && (
-        <div className="space-y-3 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {tracks.map((track, index) => (
             <TrackInfo
               key={track.id}
@@ -85,7 +85,6 @@ const Search = () => {
               trackIndex={index}
               playbackContext="search"
               showAddToPlaylist={true}
-              showPlayButton={true}
             />
           ))}
         </div>
