@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "NextGen Music",
   description: "Your music streaming app",
+  icons: {
+    icon: [{ url: "/icons8-music-50.png", sizes: "50x50", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({
