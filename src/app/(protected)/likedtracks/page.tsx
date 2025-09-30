@@ -55,7 +55,7 @@ const LikedTracks = () => {
       )}
 
       {!isLoading && likedTracks.length > 0 && (
-        <div className="space-y-3 max-w-4xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {likedTracks.map((track, index) => (
             <TrackInfo
               key={track.id}
@@ -64,7 +64,6 @@ const LikedTracks = () => {
               trackIndex={index}
               playbackContext="liked"
               showLikeButton={true}
-              showPlayButton={true}
               onUnlike={handleUnlikeTrack}
             />
           ))}

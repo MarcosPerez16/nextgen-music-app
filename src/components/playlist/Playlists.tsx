@@ -33,8 +33,8 @@ const Playlists = () => {
         Your Spotify Playlists
       </h2>
       {playlists && Array.isArray(playlists) ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-6xl">
-          {playlists.slice(0, 6).map((playlist) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {playlists.slice(0, 10).map((playlist) => (
             <PlaylistCard key={playlist.id} playlist={playlist} />
           ))}
         </div>

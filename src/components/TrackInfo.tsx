@@ -19,7 +19,6 @@ const TrackInfo = ({
   showLikeButton = true,
   showAddToPlaylist = false,
   showRemoveButton = false,
-  showPlayButton = false,
   playlistId,
   deleteTrack,
   allTracks,
@@ -219,60 +218,58 @@ const TrackInfo = ({
     }
   };
 
-  //convert from miliseconds
-  const formatDuration = (ms: number) => {
-    const minutes = Math.floor(ms / 60000);
-    const seconds = Math.floor((ms % 60000) / 1000);
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
-
   return (
-    <Card className="group hover:shadow-lg transition-all duration-200 border-gray-200 hover:border-purple-300">
-      <CardContent className="p-4">
-        <div className="flex items-center gap-4">
-          {/* Album artwork */}
+    <Card className="group hover:shadow-xl transition-all duration-200 border-gray-200 hover:border-purple-300 overflow-hidden">
+      <CardContent className="p-0">
+        {/* Album artwork - full width at top */}
+        <div className="relative aspect-square">
           {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={track.album.name}
-              className="rounded-md object-cover flex-shrink-0"
-              width={64}
-              height={64}
-            />
+            <>
+              <Image
+                src={imageUrl}
+                alt={track.album.name}
+                className="object-cover w-full h-full"
+                width={300}
+                height={300}
+              />
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                <Button
+                  onClick={handlePlayTrack}
+                  size="icon"
+                  className="bg-purple-600 hover:bg-purple-700 text-white rounded-full h-14 w-14 shadow-lg"
+                >
+                  <Play className="h-6 w-6 fill-white ml-1" />
+                </Button>
+              </div>
+            </>
           ) : (
-            <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center">
-              <span className="text-gray-400 text-xs">No Image</span>
+            <div className="w-full aspect-square bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+              <span className="text-gray-400">No Image</span>
             </div>
           )}
+        </div>
 
-          {/* Track info */}
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-base text-gray-900 truncate">
-              {track.name}
-            </h3>
-            <p className="text-sm text-gray-600 truncate">{artistNames}</p>
-            <p className="text-xs text-gray-500 truncate">{track.album.name}</p>
-            <p className="text-xs text-gray-500 mt-1">
-              {formatDuration(track.duration_ms)}
-            </p>
-          </div>
+        {/* Track info - below image */}
+        <div className="p-4">
+          <h3 className="font-semibold text-base text-gray-900 truncate group-hover:text-purple-700 transition-colors mb-1">
+            {track.name}
+          </h3>
+          <p className="text-sm text-gray-600 truncate mb-1">{artistNames}</p>
+          <p className="text-xs text-gray-500 truncate">{track.album.name}</p>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {showPlayButton && (
-              <Button
-                onClick={handlePlayTrack}
-                size="sm"
-                className="bg-purple-600 hover:bg-purple-700 text-white"
-              >
-                <Play className="h-4 w-4" />
-              </Button>
-            )}
-
+          {/* Action buttons - horizontal row at bottom */}
+          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
             {showLikeButton && (
-              <Button onClick={handleToggleLike} variant="ghost" size="sm">
+              <Button
+                onClick={handleToggleLike}
+                variant="ghost"
+                size="sm"
+                className="flex-shrink-0"
+              >
                 <Heart
-                  className={liked ? "text-red-500" : "text-gray-400"}
+                  className={`h-4 w-4 ${
+                    liked ? "text-red-500" : "text-gray-400"
+                  }`}
                   fill={liked ? "red" : "none"}
                 />
               </Button>
@@ -290,7 +287,7 @@ const TrackInfo = ({
                   <Button
                     variant="outline"
                     size="sm"
-                    className="hover:bg-purple-50"
+                    className="flex-1 text-xs hover:bg-purple-50"
                   >
                     Add to Playlist
                   </Button>
@@ -309,8 +306,13 @@ const TrackInfo = ({
             )}
 
             {showRemoveButton && (
-              <Button size="sm" onClick={handleDelete} variant="destructive">
-                Delete
+              <Button
+                size="sm"
+                onClick={handleDelete}
+                variant="destructive"
+                className="flex-1 text-xs"
+              >
+                Remove
               </Button>
             )}
           </div>

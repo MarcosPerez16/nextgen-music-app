@@ -38,8 +38,8 @@ const TopTracks = () => {
         Your Top Tracks
       </h2>
       {topTracks && Array.isArray(topTracks) ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-6xl">
-          {topTracks.slice(0, 6).map((track, index) => (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+          {topTracks.slice(0, 10).map((track, index) => (
             <TrackCard
               key={track.id}
               track={track}
