@@ -32,9 +32,15 @@ const Playlists = () => {
     );
   };
   return (
-    <div>
-      <h1>Browse or create your personal NextGen playlists!</h1>
-      {isLoading && <Loader2 className="h-8 w-8 animate-spin" />}
+    <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen">
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">
+        Browse or create your personal NextGen playlists!
+      </h1>
+      {isLoading && (
+        <div className="flex justify-center py-4">
+          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
+        </div>
+      )}
       <PlaylistsForm handleFetchPlaylists={handleFetchPlaylists} />
       <DisplayPlaylists
         playlists={playlists}
