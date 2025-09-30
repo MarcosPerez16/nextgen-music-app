@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "./ui/checkbox";
+import { Checkbox } from "../ui/checkbox";
 import { Loader2 } from "lucide-react";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "../ui/card";
 
 type PlaylistsFormProps = {
   handleFetchPlaylists: () => Promise<void>;

@@ -1,4 +1,4 @@
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "../ui/card";
 import { SpotifyPlaylist } from "@/types/spotify";
 import Image from "next/image";
 import Link from "next/link";

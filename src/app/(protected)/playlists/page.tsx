@@ -1,6 +1,6 @@
 "use client";
-import DisplayPlaylists from "@/components/DisplayPlaylists";
-import PlaylistsForm from "@/components/PlaylistsForm";
+import DisplayPlaylists from "@/components/playlist/DisplayPlaylists";
+import PlaylistsForm from "@/components/playlist/PlaylistsForm";
 import { AppPlaylist } from "@/types/playlist";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -32,7 +32,7 @@ const Playlists = () => {
     );
   };
   return (
-    <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen">
+    <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen pb-36">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">
         Browse or create your personal NextGen playlists!
       </h1>

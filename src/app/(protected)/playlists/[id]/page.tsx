@@ -44,7 +44,7 @@ const CustomPlaylistTracks = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen">
+    <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen pb-36">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Playlist Tracks</h1>
         <Link href="/playlists">

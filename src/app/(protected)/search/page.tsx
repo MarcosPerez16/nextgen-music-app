@@ -42,7 +42,7 @@ const Search = () => {
   };
 
   return (
-    <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen">
+    <div className="p-6 max-w-7xl mx-auto bg-white min-h-screen pb-36">
       <h1 className="text-3xl font-bold text-gray-900 mb-8">
         Search For Your Favorite Tracks!
       </h1>
