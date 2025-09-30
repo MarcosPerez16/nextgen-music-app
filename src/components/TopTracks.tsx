@@ -35,7 +35,7 @@ const TopTracks = () => {
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6 bg-white/80 backdrop-blur-sm p-3 rounded-lg">
-        Your Top Tracks
+        Your Spotify Top Tracks
       </h2>
       {topTracks && Array.isArray(topTracks) ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
@@ -43,7 +43,7 @@ const TopTracks = () => {
             <TrackCard
               key={track.id}
               track={track}
-              allTracks={topTracks.slice(0, 6)}
+              allTracks={topTracks.slice(0, 10)}
               trackIndex={index}
               playbackContext="dashboard"
             />
