@@ -1,4 +1,4 @@
-import { Card } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import Image from "next/image";
 import { useState } from "react";
 import { Input } from "./ui/input";
@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { CustomPlaylistCardProps } from "@/types/playlist";
 import { toast } from "sonner";
+import { Music2 } from "lucide-react";
 
 const CustomPlaylistCard = ({
   playlist,
@@ -100,63 +101,100 @@ const CustomPlaylistCard = ({
   };
 
   return (
-    <Card className="p-4 mb-4">
-      <div className="flex items-center space-x-4">
-        {playlist.imageUrl ? (
-          <Image
-            src={playlist.imageUrl}
-            alt={playlist.name}
-            className="rounded-md object-cover"
-            width={64}
-            height={64}
-          />
-        ) : (
-          <div className="w-16 h-16 bg-gray-300 rounded-md mr-4 flex items-center justify-center">
-            <span className="text-gray-500 text-xs">No Image</span>
-          </div>
-        )}
-        <div className="flex-1">
-          {isEditing ? (
-            <Input type="text" value={editName} onChange={handleNameChange} />
+    <Card className="group hover:shadow-lg transition-all duration-200 border-gray-200 hover:border-purple-300">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-4">
+          {/* Playlist image */}
+          {playlist.imageUrl ? (
+            <Image
+              src={playlist.imageUrl}
+              alt={playlist.name}
+              className="rounded-md object-cover flex-shrink-0"
+              width={80}
+              height={80}
+            />
           ) : (
-            <h3 className="font-semibold text-lg">{playlist.name}</h3>
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-purple-200 rounded-md flex-shrink-0 flex items-center justify-center">
+              <Music2 className="h-8 w-8 text-purple-600" />
+            </div>
           )}
 
-          <p className="text-gray-500 text-sm">{playlist.description}</p>
-          <p className="text-gray-500 text-sm">{formatCreatedAt()}</p>
-          <p className="text-gray-500 text-sm">
-            {playlist._count?.PlaylistTrack || 0} tracks
-          </p>
-          {playlist.isPublic ? "Public" : "Private"}
+          {/* Playlist info */}
+          <div className="flex-1 min-w-0">
+            {isEditing ? (
+              <Input
+                type="text"
+                value={editName}
+                onChange={handleNameChange}
+                className="mb-2 border-purple-300 focus:border-purple-500"
+              />
+            ) : (
+              <h3 className="font-semibold text-lg text-gray-900 truncate mb-1">
+                {playlist.name}
+              </h3>
+            )}
+
+            {playlist.description && (
+              <p className="text-gray-600 text-sm mb-2 line-clamp-2">
+                {playlist.description}
+              </p>
+            )}
+
+            <div className="flex items-center gap-3 text-xs text-gray-500">
+              <span>{playlist._count?.PlaylistTrack || 0} tracks</span>
+              <span>•</span>
+              <span>{formatCreatedAt()}</span>
+              <span>•</span>
+              <span
+                className={
+                  playlist.isPublic ? "text-purple-600 font-medium" : ""
+                }
+              >
+                {playlist.isPublic ? "Public" : "Private"}
+              </span>
+            </div>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isEditing ? (
+              <>
+                <Button
+                  size="sm"
+                  onClick={handleSave}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  Save
+                </Button>
+                <Button size="sm" onClick={handleCancel} variant="outline">
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  size="sm"
+                  onClick={handleView}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  View
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleEditMode}
+                  variant="outline"
+                  className="hover:bg-purple-50"
+                >
+                  Edit
+                </Button>
+                <Button size="sm" onClick={handleDelete} variant="destructive">
+                  Delete
+                </Button>
+              </>
+            )}
+          </div>
         </div>
-        {isEditing ? (
-          <div>
-            <Button className="ml-4" size="sm" onClick={handleSave}>
-              Save
-            </Button>
-            <Button className="ml-4" size="sm" onClick={handleCancel}>
-              Cancel
-            </Button>
-          </div>
-        ) : (
-          <div>
-            <Button className="ml-4" size="sm" onClick={handleView}>
-              View
-            </Button>
-            <Button className="ml-4" size="sm" onClick={handleEditMode}>
-              Edit Name
-            </Button>
-            <Button
-              className="ml-4"
-              size="sm"
-              onClick={handleDelete}
-              variant="destructive"
-            >
-              Delete
-            </Button>
-          </div>
-        )}
-      </div>
+      </CardContent>
     </Card>
   );
 };

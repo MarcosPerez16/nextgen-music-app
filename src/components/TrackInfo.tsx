@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { TrackInfoProps } from "@/types/spotify";
-import { Card } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 import { useEffect, useState } from "react";
 import { Heart, Play } from "lucide-react";
 import { Button } from "./ui/button";
@@ -25,6 +25,7 @@ const TrackInfo = ({
   allTracks,
   trackIndex,
   playbackContext,
+  onUnlike,
 }: TrackInfoProps) => {
   const [liked, setLiked] = useState(false);
   const [userPlaylists, setUserPlaylists] = useState<AppPlaylist[]>([]);
@@ -88,6 +89,11 @@ const TrackInfo = ({
 
       //update the local state to reflect new like status
       setLiked(result.liked);
+
+      //call the onUnlike callback if track was unliked
+      if (!result.liked && onUnlike) {
+        onUnlike(track.id);
+      }
     } catch (error) {
       console.error("Error toggling like:", error);
     }
@@ -221,78 +227,95 @@ const TrackInfo = ({
   };
 
   return (
-    <Card className="p-4 mb-4">
-      <div className="flex items-center space-x-4">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
-            alt={track.album.name}
-            className="rounded-md object-cover"
-            width={64}
-            height={64}
-          />
-        ) : (
-          <div className="w-16 h-16 bg-gray-300 rounded-md mr-4 flex items-center justify-center">
-            <span className="text-gray-500 text-xs">No Image</span>
-          </div>
-        )}
-        <div className="flex-1">
-          <h3 className="font-semibold text-lg">{track.name}</h3>
-          <p className="text-gray-600">{artistNames}</p>
-          <p className="text-gray-500 text-sm">{track.album.name}</p>
-          <p className="text-gray-500 text-sm">
-            {formatDuration(track.duration_ms)}
-          </p>
-        </div>
-        {showLikeButton && (
-          <Button onClick={handleToggleLike} variant="ghost" size="sm">
-            <Heart
-              className={liked ? "text-red-500" : "text-gray-400"}
-              fill={liked ? "red" : "none"}
+    <Card className="group hover:shadow-lg transition-all duration-200 border-gray-200 hover:border-purple-300">
+      <CardContent className="p-4">
+        <div className="flex items-center gap-4">
+          {/* Album artwork */}
+          {imageUrl ? (
+            <Image
+              src={imageUrl}
+              alt={track.album.name}
+              className="rounded-md object-cover flex-shrink-0"
+              width={64}
+              height={64}
             />
-          </Button>
-        )}
-        {showAddToPlaylist && (
-          <DropdownMenu
-            onOpenChange={(open) => {
-              if (open) {
-                fetchUserPlaylists();
-              }
-            }}
-          >
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                Add to Playlist
+          ) : (
+            <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 flex items-center justify-center">
+              <span className="text-gray-400 text-xs">No Image</span>
+            </div>
+          )}
+
+          {/* Track info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-base text-gray-900 truncate">
+              {track.name}
+            </h3>
+            <p className="text-sm text-gray-600 truncate">{artistNames}</p>
+            <p className="text-xs text-gray-500 truncate">{track.album.name}</p>
+            <p className="text-xs text-gray-500 mt-1">
+              {formatDuration(track.duration_ms)}
+            </p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {showPlayButton && (
+              <Button
+                onClick={handlePlayTrack}
+                size="sm"
+                className="bg-purple-600 hover:bg-purple-700 text-white"
+              >
+                <Play className="h-4 w-4" />
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              {userPlaylists.map((playlist) => (
-                <DropdownMenuItem
-                  key={playlist.id}
-                  onClick={() => handleAddToPlaylist(playlist.id)}
-                >
-                  {playlist.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-        {showPlayButton && (
-          <Button onClick={handlePlayTrack} variant="outline" size="sm">
-            <Play className="h-4 w-4" />
-          </Button>
-        )}
-        {showRemoveButton && (
-          <Button
-            className="ml-4"
-            size="sm"
-            onClick={handleDelete}
-            variant="destructive"
-          >
-            Delete
-          </Button>
-        )}
-      </div>
+            )}
+
+            {showLikeButton && (
+              <Button onClick={handleToggleLike} variant="ghost" size="sm">
+                <Heart
+                  className={liked ? "text-red-500" : "text-gray-400"}
+                  fill={liked ? "red" : "none"}
+                />
+              </Button>
+            )}
+
+            {showAddToPlaylist && (
+              <DropdownMenu
+                onOpenChange={(open) => {
+                  if (open) {
+                    fetchUserPlaylists();
+                  }
+                }}
+              >
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="hover:bg-purple-50"
+                  >
+                    Add to Playlist
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  {userPlaylists.map((playlist) => (
+                    <DropdownMenuItem
+                      key={playlist.id}
+                      onClick={() => handleAddToPlaylist(playlist.id)}
+                    >
+                      {playlist.name}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+
+            {showRemoveButton && (
+              <Button size="sm" onClick={handleDelete} variant="destructive">
+                Delete
+              </Button>
+            )}
+          </div>
+        </div>
+      </CardContent>
     </Card>
   );
 };
