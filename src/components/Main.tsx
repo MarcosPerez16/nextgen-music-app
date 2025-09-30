@@ -1,6 +1,6 @@
 import { SpotifyUserProfile } from "@/types/spotify";
 import { Skeleton } from "./ui/skeleton";
-import Playlists from "./Playlists";
+import Playlists from "./playlist/Playlists";
 import TopTracks from "./TopTracks";
 import UserProfile from "./UserProfile";
 
@@ -21,7 +21,7 @@ const Main = ({ userProfile, isLoading }: MainProps) => {
   }
 
   return (
-    <main className="p-6 max-w-7xl mx-auto bg-white min-h-screen">
+    <main className="p-6 max-w-7xl mx-auto bg-white min-h-screen pb-36">
       <UserProfile userProfile={userProfile} />
       <Playlists />
       <TopTracks />

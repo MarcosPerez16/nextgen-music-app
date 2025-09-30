@@ -1,8 +1,8 @@
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent } from "../ui/card";
 import Image from "next/image";
 import { useState } from "react";
-import { Input } from "./ui/input";
-import { Button } from "./ui/button";
+import { Input } from "../ui/input";
+import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
 import { CustomPlaylistCardProps } from "@/types/playlist";
 import { toast } from "sonner";
