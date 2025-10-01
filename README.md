@@ -28,9 +28,9 @@ A full-stack music streaming app built with Next.js and the Spotify API. Create 
 
 ## Screenshots
 
+<img width="600" height="1263" alt="Image" src="https://github.com/user-attachments/assets/2ac3f85f-c114-4dfd-b925-b156ac57c5d5" />
 <img width="600" height="1258" alt="Image" src="https://github.com/user-attachments/assets/4ae96614-1fb9-4a5b-bb41-fa9199455055" />
 <img width="600" height="1262" alt="Image" src="https://github.com/user-attachments/assets/116ac756-20d3-4f51-924b-f2934862632c" />
-<img width="600" height="1263" alt="Image" src="https://github.com/user-attachments/assets/2ac3f85f-c114-4dfd-b925-b156ac57c5d5" />
 
 ## Environment Setup
 
