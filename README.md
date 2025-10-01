@@ -1,4 +1,45 @@
-# NextGen Music App
+# NextGen Music
+
+A full-stack music streaming app built with Next.js and the Spotify API. Create custom playlists, search tracks, and control playback with queue management.
+
+**Demo Video:** https://youtu.be/RCgPrXIThOk  
+**Live App:** nextgen-music-app-vynk.vercel.app
+
+## Tech Stack
+
+- Next.js 14, TypeScript, Tailwind CSS
+- Prisma + PostgreSQL
+- NextAuth.js with Spotify OAuth
+- Spotify Web API & Web Playback SDK
+
+## Features
+
+- Custom playlist creation and management
+- Track search and playback controls
+- Like/save favorite tracks
+- Queue management with playback context
+- Responsive card-based UI
+
+## Demo Access
+
+**Note:** Full playback requires Spotify Premium. For demo access, email me at [your-email] and I'll add you as a test user.
+
+**Browser Requirements:** Desktop Chrome, Firefox, Safari, or Edge (mobile browsers don't support Spotify Web Playback SDK).
+
+## Screenshots
+
+
+
+## Environment Setup
+
+1. Copy `.env.example` to `.env`
+2. Fill in your own values for each variable
+3. See comments in `.env.example` for detailed instructions
+
+## Getting Started
+```bash
+npm install
+npm run dev# NextGen Music App
 
 Brief description of what your app does
 
